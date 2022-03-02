@@ -24,7 +24,7 @@ public class Main {
 
 
         //Вывести все имеющиеся компании в формате «Краткое название» – «Дата основания 17/01/98»;
-        System.out.println("Все имеющиеся компании:");
+        System.out.println("\nВсе имеющиеся компании:");
         companies.getCompanies().forEach(c -> System.out.printf("%s - %s\n",
                         c.getName(),
                         c.getFounded().format(defaultDateFormat)));
@@ -38,13 +38,21 @@ public class Main {
         // На запрос пользователя в виде кода валюты, например EU, USD, RUB и пр. выводить id
         // и коды ценных бумаг, использующих заданную валюту.
         String input = "";
+        StringBuilder sb = new StringBuilder();
         Scanner scanner = new Scanner(System.in);
         while (true){
+            sb.setLength(0);
             System.out.println("\nВведите дату или код валюты      'exit' - для выхода:");
             if (scanner.hasNext()) input = scanner.nextLine().toUpperCase();
             if (input.equals("EXIT")) return;
-            if (input.matches("\\d{2}.\\d{2}.\\d{2,4}")){
-                showIfFoundedAfter(input);
+            if (input.matches("\\d\\D\\d{2}\\D\\d{2}(\\d{2})?")){
+                showIfFoundedAfter("0" + input);
+            }else if(input.matches("\\d\\D\\d\\D\\d{2}(\\d{2})?")){
+                sb.append("0").append(input).insert(3, "0");
+                showIfFoundedAfter(sb.toString());
+            }else if(input.matches("\\d{2}\\D\\d\\D\\d{2}(\\d{2})?")){
+                sb.append(input).insert(3, "0");
+                showIfFoundedAfter(sb.toString());
             }else if(input.matches("[a-zA-Z]{2,3}")){
                 showIfContainsCurrency(input);
             }else {
@@ -56,7 +64,8 @@ public class Main {
     // На запрос пользователя в виде даты «ДД.ММ.ГГГГ», «ДД.ММ,ГГ», «ДД/ММ/ГГГГ» и «ДД/ММ/ГГ»
     // вывести название и дату создания всех организаций, основанных после введенной даты;
     private static void showIfFoundedAfter(String input){
-        String pattern = input.replaceFirst("\\d{2}", "dd")
+        String pattern = input
+                .replaceFirst("\\d{2}", "dd")
                 .replaceFirst("\\d{2}", "MM")
                 .replaceFirst("\\d{2}", "yy")
                 .replaceFirst("\\d{2}", "yy");
@@ -101,7 +110,8 @@ public class Main {
                                             security.getCode(),
                                             security.getDate().format(defaultDateFormat),
                                             security.getName());
-                                    count.getAndSet(count.get() + 1);});});
-        System.out.printf("Количество бумаг = %d\n", count.get());
+                                    count.getAndIncrement();});
+                    System.out.printf("   количество бумаг = %d\n", count.get());
+                count.set(0);});
     }
 }
