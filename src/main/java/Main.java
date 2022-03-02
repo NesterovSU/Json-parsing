@@ -85,11 +85,13 @@ public class Main {
     private static void showIfContainsCurrency(String currency){
         companies.getCompanies().forEach(
                 company->{
-                    System.out.println("id компании - " + company.getId());
-                    company.getSecurities().stream()
+                    if (company.getSecurities().stream()
+                            .anyMatch(security -> security.getCurrency().contains(currency))){
+                        System.out.println("id компании - " + company.getId());
+                        company.getSecurities().stream()
                             .filter(security -> security.getCurrency().contains(currency))
                             .forEach(
-                                    security -> System.out.println("   код бумаги " + security.getCode()));});
+                                    security -> System.out.println("   код бумаги " + security.getCode()));}});
     }
 
 
